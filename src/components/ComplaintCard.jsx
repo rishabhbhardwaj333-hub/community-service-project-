@@ -1,8 +1,9 @@
 import { CheckCircle2, Trash2, MapPin } from "lucide-react";
-import { getCategory } from "../constants.js";
+import { getCategory, getPriority } from "../constants.js";
 
 export default function ComplaintCard({ complaint, onResolve, onDelete }) {
   const cat = getCategory(complaint.category);
+  const priority = getPriority(complaint.priority);
   const isPending = complaint.status === "Pending";
 
   return (
@@ -11,9 +12,14 @@ export default function ComplaintCard({ complaint, onResolve, onDelete }) {
       style={{ borderLeftColor: cat?.color }}
     >
       <div className="complaint-head">
-        <span className="badge">
-          {cat?.icon} {cat?.label}
-        </span>
+        <div className="badge-group">
+          <span className="badge">
+            {cat?.icon} {cat?.label}
+          </span>
+          <span className={`priority-badge ${priority.id}`}>
+            {priority.label} Priority
+          </span>
+        </div>
         <span className={`status ${isPending ? "pending" : "resolved"}`}>
           {complaint.status}
         </span>

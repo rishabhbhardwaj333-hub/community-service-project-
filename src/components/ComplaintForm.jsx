@@ -2,13 +2,13 @@ import { useRef, useState } from "react";
 import L from "leaflet";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import { Send, ImagePlus, X } from "lucide-react";
-import { CATEGORIES, DEFAULT_CENTER } from "../constants.js";
+import { CATEGORIES, PRIORITIES, DEFAULT_CENTER } from "../constants.js";
 
 const pinIcon = L.divIcon({
   html: '<div class="pin">📍</div>',
   className: "",
-  iconSize: [34, 34],
-  iconAnchor: [17, 30],
+  iconSize: [36, 36],
+  iconAnchor: [17, 34],
 });
 
 function ClickHandler({ onPick }) {
@@ -46,6 +46,7 @@ export default function ComplaintForm({ onAdd }) {
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState("medium");
   const [location, setLocation] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [error, setError] = useState("");
@@ -94,6 +95,7 @@ export default function ComplaintForm({ onAdd }) {
       category,
       title: title.trim(),
       description: description.trim(),
+      priority,
       location,
       photo,
     });
@@ -101,6 +103,7 @@ export default function ComplaintForm({ onAdd }) {
     setCategory("");
     setTitle("");
     setDescription("");
+    setPriority("medium");
     setLocation(null);
     removePhoto();
     setError("");
@@ -145,7 +148,21 @@ export default function ComplaintForm({ onAdd }) {
       />
       <small className="counter">{description.length} characters</small>
 
-      <p className="label">4. Attach a Photo (optional)</p>
+      <p className="label">4. Priority Level</p>
+      <div className="priority-options">
+        {PRIORITIES.map((p) => (
+          <button
+            type="button"
+            key={p.id}
+            className={`priority-btn ${p.id} ${priority === p.id ? "selected" : ""}`}
+            onClick={() => setPriority(p.id)}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      <p className="label">5. Attach a Photo (optional)</p>
       <input
         ref={fileRef}
         id="photo-input"
@@ -169,15 +186,21 @@ export default function ComplaintForm({ onAdd }) {
         </label>
       )}
 
-      <p className="label">5. Pin the Location (optional, click on the map)</p>
+      <p className="label">6. Pin the Location (optional, click on the map)</p>
       <div className="map-box small-map">
-        <MapContainer center={DEFAULT_CENTER} zoom={12} style={{ height: "100%", width: "100%" }}>
+        <MapContainer
+          center={DEFAULT_CENTER}
+          zoom={12}
+          style={{ height: "100%", width: "100%" }}
+        >
           <TileLayer
             attribution="&copy; OpenStreetMap contributors"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <ClickHandler onPick={setLocation} />
-          {location && <Marker position={[location.lat, location.lng]} icon={pinIcon} />}
+          {location && (
+            <Marker position={[location.lat, location.lng]} icon={pinIcon} />
+          )}
         </MapContainer>
       </div>
       {location && (
@@ -187,7 +210,7 @@ export default function ComplaintForm({ onAdd }) {
       )}
 
       {error && <p className="error">{error}</p>}
-      {success && <p className="success">Complaint registered successfully.</p>}
+      {success && <p className="success">Complaint registered successfully!</p>}
 
       <button type="submit" className="btn-3d">
         <Send size={16} /> Submit

@@ -1,6 +1,6 @@
 import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { DEFAULT_CENTER, getCategory } from "../constants.js";
+import { DEFAULT_CENTER, getCategory, getPriority } from "../constants.js";
 
 const makeIcon = (emoji) =>
   L.divIcon({
@@ -55,6 +55,8 @@ export default function MapView({ complaints }) {
                     <strong>{c.title}</strong>
                     <br />
                     {cat?.icon} {cat?.label} · {c.status}
+                    <br />
+                    Priority: {getPriority(c.priority).label}
                     <br />
                     <span>{c.description}</span>
                   </div>

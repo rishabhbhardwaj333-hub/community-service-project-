@@ -7,4 +7,15 @@ export const CATEGORIES = [
 
 export const getCategory = (id) => CATEGORIES.find((c) => c.id === id);
 
+// ---------- priority levels (rank is used for sorting) ----------
+export const PRIORITIES = [
+  { id: "low", label: "Low", rank: 1 },
+  { id: "medium", label: "Medium", rank: 2 },
+  { id: "high", label: "High", rank: 3 },
+];
+
+// Old complaints saved without a priority are treated as "medium"
+export const getPriority = (id) =>
+  PRIORITIES.find((p) => p.id === id) || PRIORITIES[1];
+
 export const DEFAULT_CENTER = [28.6139, 77.209]; // Delhi

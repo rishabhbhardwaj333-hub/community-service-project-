@@ -131,8 +131,8 @@
       box-shadow: var(--shadow);
     }
     .button-icon {
-      height: 19px;
-      width: 19px;
+      height: 18px;
+      width: 18px;
     }
   }
 
@@ -155,7 +155,7 @@
 
 #spacer {
   height: 88px;
-  border-top: 2px solid var(--border);
+  border-top: 1px solid var(--border);
   @media (max-width: 1024px) {
     height: 48px;
   }
@@ -169,7 +169,7 @@
   &::after {
     content: '';
     position: absolute;
-    top: -4.4px;
+    top: -4.5px;
     border: 5px solid transparent;
   }
 
