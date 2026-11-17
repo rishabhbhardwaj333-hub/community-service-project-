@@ -20,7 +20,7 @@ function ClickHandler({ onPick }) {
   return null;
 }
 
-// Resize and compress the image so it fits in localStorage
+// Resize and compress the image so the upload stays small
 function compressImage(file, maxWidth = 800, quality = 0.7) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -51,6 +51,7 @@ export default function ComplaintForm({ onAdd }) {
   const [photo, setPhoto] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const fileRef = useRef(null);
 
   const handlePhoto = async (e) => {
@@ -82,7 +83,7 @@ export default function ComplaintForm({ onAdd }) {
     if (fileRef.current) fileRef.current.value = "";
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess(false);
 
@@ -91,23 +92,32 @@ export default function ComplaintForm({ onAdd }) {
     if (description.trim().length < 10)
       return setError("Please explain the issue (at least 10 characters).");
 
-    onAdd({
-      category,
-      title: title.trim(),
-      description: description.trim(),
-      priority,
-      location,
-      photo,
-    });
+    setSubmitting(true);
+    try {
+      // onAdd now talks to the server, so wait for it to finish
+      await onAdd({
+        category,
+        title: title.trim(),
+        description: description.trim(),
+        priority,
+        location,
+        photo,
+      });
 
-    setCategory("");
-    setTitle("");
-    setDescription("");
-    setPriority("medium");
-    setLocation(null);
-    removePhoto();
-    setError("");
-    setSuccess(true);
+      // Only clear the form if the server saved it successfully
+      setCategory("");
+      setTitle("");
+      setDescription("");
+      setPriority("medium");
+      setLocation(null);
+      removePhoto();
+      setError("");
+      setSuccess(true);
+    } catch (err) {
+      setError(err.message || "Could not submit the complaint. Is the server running?");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -212,8 +222,8 @@ export default function ComplaintForm({ onAdd }) {
       {error && <p className="error">{error}</p>}
       {success && <p className="success">Complaint registered successfully!</p>}
 
-      <button type="submit" className="btn-3d">
-        <Send size={16} /> Submit
+      <button type="submit" className="btn-3d" disabled={submitting}>
+        <Send size={16} /> {submitting ? "Submitting..." : "Submit"}
       </button>
     </form>
   );
